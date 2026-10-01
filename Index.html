@@ -1,0 +1,379 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>MedOS — 2nd Year MBBS</title>
+  
+  <style>
+    :root {
+      /* Light Medical Theme */
+      --bg-body: #f1f5f9;
+      --bg-surface: #ffffff;
+      --bg-surface-hover: #f8fafc;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      
+      --primary: #0d9488; /* Clinical Teal */
+      --primary-hover: #0f766e;
+      --secondary: #1e293b; 
+      --accent: #3b82f6; /* Blue */
+      
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      
+      --radius: 12px;
+      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --sidebar-width: 260px;
+    }
+
+    body.dark-mode {
+      /* Dark Clinical Slate Theme */
+      --bg-body: #0f172a;
+      --bg-surface: #1e293b;
+      --bg-surface-hover: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: #334155;
+      --primary: #14b8a6;
+      --primary-hover: #2dd4bf;
+    }
+
+    * { box-sizing: border-box; }
+
+    /* Strict Mobile-Friendly Scrolling Architecture */
+    html, body {
+      height: 100%; margin: 0; padding: 0; 
+      overflow: hidden; /* Prevent body bounce */
+      font-family: var(--font-sans);
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      display: flex; width: 100%;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    h1, h2, h3, h4 { margin: 0 0 0.5rem; font-weight: 600; line-height: 1.2; }
+    p { margin: 0 0 1rem; line-height: 1.5; color: var(--text-muted); }
+    button { cursor: pointer; font-family: inherit; border: none; background: none; }
+    
+    input, select, textarea { 
+      font-family: inherit; width: 100%; padding: 0.75rem; 
+      border-radius: 8px; border: 1px solid var(--border-color);
+      background: var(--bg-surface); color: var(--text-main);
+    }
+    input:focus, select:focus, textarea:focus { outline: 2px solid var(--primary); outline-offset: -1px; }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 500;
+      transition: all 0.2s; gap: 0.5rem; text-decoration: none; font-size: 0.95rem;
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
+    .btn-secondary { background: var(--bg-surface-hover); color: var(--text-main); border: 1px solid var(--border-color); }
+    .btn-secondary:hover { background: var(--border-color); }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-icon { padding: 0.5rem; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+
+    .card { background: var(--bg-surface); border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow); border: 1px solid var(--border-color); }
+    .grid { display: grid; gap: 1.5rem; }
+    .grid-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+    .flex-between { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+    
+    .badge { padding: 0.25rem 0.6rem; border-radius: 99px; font-size: 0.75rem; font-weight: 600; white-space: nowrap; }
+    .badge-teal { background: rgba(13, 148, 136, 0.1); color: var(--primary); }
+
+    .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; border-radius: 8px; border: 1px solid var(--border-color); }
+    table { width: 100%; border-collapse: collapse; text-align: left; min-width: 600px; background: var(--bg-surface); }
+    th, td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; }
+    th { background: var(--bg-surface-hover); font-weight: 600; color: var(--text-muted); }
+
+    #sidebar {
+      width: var(--sidebar-width); background: var(--bg-surface); border-right: 1px solid var(--border-color);
+      display: flex; flex-direction: column; height: 100%; flex-shrink: 0; z-index: 20;
+    }
+    .brand { padding: 1.5rem; font-size: 1.25rem; font-weight: bold; color: var(--primary); display: flex; align-items: center; gap: 0.75rem; border-bottom: 1px solid var(--border-color);}
+    #desktop-nav { flex: 1; overflow-y: auto; padding: 1rem 0; }
+    .nav-item {
+      padding: 0.8rem 1.5rem; display: flex; align-items: center; gap: 0.75rem;
+      color: var(--text-muted); text-decoration: none; font-weight: 500;
+      border-left: 3px solid transparent; transition: 0.2s;
+    }
+    .nav-item:hover, .nav-item.active { background: var(--bg-surface-hover); color: var(--primary); border-left-color: var(--primary); }
+
+    #main-content { flex: 1; display: flex; flex-direction: column; height: 100%; position: relative; overflow: hidden; }
+    header {
+      height: 64px; background: var(--bg-surface); border-bottom: 1px solid var(--border-color);
+      display: flex; align-items: center; justify-content: space-between; padding: 0 1.5rem; flex-shrink: 0; z-index: 10;
+    }
+    
+    /* CRITICAL SCROLLING FIX */
+    #views { 
+      flex: 1; 
+      overflow-y: auto; 
+      overflow-x: hidden; 
+      -webkit-overflow-scrolling: touch; 
+      position: relative; 
+      padding-bottom: 2rem; /* Buffer for bottom */
+    }
+    .view-container { padding: 2rem; display: none; max-width: 1200px; margin: 0 auto; animation: fadeIn 0.3s ease; }
+    .view-container.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+    details.syllabus-chapter { background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 1rem; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    details.syllabus-chapter > summary { 
+      padding: 1.2rem; font-weight: 600; cursor: pointer; background: var(--bg-surface-hover); 
+      display: flex; justify-content: space-between; align-items: center; list-style: none; user-select: none;
+    }
+    details.syllabus-chapter > summary::-webkit-details-marker { display: none; }
+    details.syllabus-chapter > summary::after { content: '+'; font-size: 1.5rem; font-weight: 300; color: var(--primary); }
+    details.syllabus-chapter[open] > summary::after { content: '−'; }
+    details.syllabus-chapter[open] > summary { border-bottom: 1px solid var(--border-color); }
+    
+    .topic-row { 
+      display: flex; align-items: center; justify-content: space-between; padding: 1rem;
+      border-bottom: 1px solid var(--border-color); gap: 1rem; background: var(--bg-surface);
+    }
+    .topic-row:last-child { border-bottom: none; }
+    .topic-name { flex: 1; font-size: 0.95rem; font-weight: 500; }
+    .topic-controls { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    
+    .star-rating { display: inline-flex; gap: 2px; color: var(--border-color); cursor: pointer; }
+    .star-rating .star { font-size: 1.2rem; line-height: 1; }
+    .star-rating .star.active { color: var(--warning); }
+    
+    .status-select { padding: 0.4rem; font-size: 0.85rem; border-radius: 6px; width: 130px; font-weight: 500; cursor: pointer; }
+    .status-Completed { background: rgba(16,185,129,0.1); color: var(--success); border-color: var(--success); }
+    .status-InProgress { background: rgba(245,158,11,0.1); color: var(--warning); border-color: var(--warning); }
+    .status-NotStarted { background: var(--bg-surface); color: var(--text-muted); border-color: var(--border-color); }
+
+    /* High-Yield Toggle Styles */
+    body.exam-mode-active .detailed-text { display: none !important; }
+    body.exam-mode-active .high-yield-text { display: block !important; font-weight: bold; color: var(--primary); }
+    .high-yield-text { display: none; }
+
+    #mobile-nav { display: none; }
+    @media (max-width: 768px) {
+      body { flex-direction: column; }
+      #sidebar { display: none; }
+      header { padding: 0 1rem; }
+      
+      #views { padding: 1rem; padding-bottom: 90px; } /* CRITICAL: Extra space for mobile nav */
+      .view-container { padding: 0; }
+      
+      #mobile-nav {
+        display: flex; justify-content: space-around; align-items: center;
+        position: fixed; bottom: 0; left: 0; width: 100%; height: 70px;
+        background: var(--bg-surface); border-top: 1px solid var(--border-color);
+        box-shadow: 0 -4px 10px rgb(0 0 0 / 0.05); z-index: 1000;
+        padding-bottom: env(safe-area-inset-bottom); /* iOS support */
+      }
+      .mobile-nav-item { 
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        font-size: 0.7rem; color: var(--text-muted); text-decoration: none; flex: 1; height: 100%; gap: 4px;
+      }
+      .mobile-nav-item.active { color: var(--primary); }
+      .mobile-nav-item svg { width: 22px; height: 22px; }
+      
+      .topic-row { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+      .topic-controls { width: 100%; justify-content: space-between; }
+      .hide-mobile { display: none !important; }
+    }
+
+    .progress-ring { position: relative; width: 90px; height: 90px; }
+    .progress-ring svg { transform: rotate(-90deg); width: 100%; height: 100%; }
+    .progress-ring circle { fill: none; stroke-width: 8; stroke-linecap: round; }
+    .progress-ring .bg { stroke: var(--border-color); }
+    .progress-ring .fill { stroke: var(--primary); transition: stroke-dashoffset 1s ease; }
+    
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center;
+      z-index: 2000; backdrop-filter: blur(2px); padding: 1rem;
+    }
+    .modal-overlay.active { display: flex; animation: fadeIn 0.2s; }
+    .modal {
+      background: var(--bg-surface); border-radius: var(--radius); width: 100%; max-width: 500px;
+      max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); padding: 1.5rem;
+    }
+    
+    #toast-container { position: fixed; bottom: 85px; right: 20px; z-index: 3000; display: flex; flex-direction: column; gap: 10px; }
+    .toast {
+      background: var(--bg-surface); color: var(--text-main); padding: 1rem 1.5rem; border-radius: 8px; 
+      box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.2); border-left: 4px solid var(--primary); font-size: 0.95rem; font-weight:500;
+      animation: slideIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+    @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+    .timer-display { font-size: 5.5rem; font-weight: bold; text-align: center; font-variant-numeric: tabular-nums; color: var(--primary); line-height: 1; margin: 2rem 0; letter-spacing: -2px;}
+    .fc-card { perspective: 1000px; width: 100%; max-width: 600px; margin: 0 auto; text-align: center; }
+  </style>
+</head>
+<body>
+
+  <aside id="sidebar">
+    <div class="brand">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      MedOS
+    </div>
+    <nav id="desktop-nav"></nav>
+  </aside>
+
+  <main id="main-content">
+    <header>
+      <div style="font-weight: 600; color: var(--text-muted); font-size: 0.95rem;" id="header-date"></div>
+      <div style="display: flex; gap: 0.5rem;">
+        <button class="btn btn-secondary hide-mobile" onclick="app.toggleExamMode()" id="btn-exam-mode" title="Toggle Exam Mode (High-Yield Only)">⚡ High-Yield</button>
+        <button class="btn btn-secondary" onclick="app.openCommandPalette()" title="Command Palette">🔍 <span class="hide-mobile" style="font-size:0.75rem; margin-left:4px; opacity:0.7;">Ctrl+K</span></button>
+        <button class="btn btn-secondary btn-icon" onclick="app.toggleTheme()" title="Toggle Theme">🌓</button>
+      </div>
+    </header>
+
+    <!-- CRITICAL SCROLLABLE CONTAINER -->
+    <div id="views">
+      
+      <div class="view-container" id="view-dashboard">
+        <h2>Clinical Dashboard</h2>
+        <div class="grid grid-3">
+          <div class="card flex-between">
+            <div>
+              <p>2nd Prof Exam</p>
+              <h3 id="dash-countdown" style="font-size: 2rem; color: var(--primary);">214 Days</h3>
+            </div>
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--border-color)" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+          </div>
+          <div class="card flex-between">
+            <div>
+              <p>Syllabus Covered</p>
+              <h3 id="dash-syllabus-text" style="font-size: 2rem;">0%</h3>
+              <p style="font-size:0.8rem; margin:0; color:var(--primary);" id="dash-syllabus-sub">0 / 0 topics</p>
+            </div>
+            <div class="progress-ring">
+              <svg><circle class="bg" cx="45" cy="45" r="40"></circle><circle class="fill" id="dash-syllabus-ring" cx="45" cy="45" r="40" stroke-dasharray="251.2" stroke-dashoffset="251.2"></circle></svg>
+            </div>
+          </div>
+          <div class="card flex-between">
+            <div>
+              <p>Study Streak</p>
+              <h3 id="dash-streak" style="font-size: 2rem; color: var(--warning);">14 Days</h3>
+            </div>
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="1.5" style="opacity:0.8;"><path d="M17.5 19c-1.5 2-4.5 2-6 0-3-4-1-8 1-11 2 4 4 6 5 11z"></path></svg>
+          </div>
+        </div>
+
+        <h3 style="margin: 2.5rem 0 1rem;">Today's Smart Mission</h3>
+        <div class="card">
+          <ul id="mission-list" style="list-style: none; display: grid; gap: 1rem; margin:0; padding:0;"></ul>
+        </div>
+      </div>
+
+      <div class="view-container" id="view-syllabus">
+        <div class="flex-between" style="margin-bottom: 1.5rem; flex-wrap: wrap;">
+          <div>
+            <h2>Granular Syllabus Tracker</h2>
+            <p style="margin:0; font-size:0.95rem;">Track every micro-topic across all 5 subjects.</p>
+          </div>
+          <div style="display:flex; gap:0.5rem; width: 100%; max-width: 400px;">
+            <select id="syllabus-filter" onchange="app.renderSyllabus()">
+              <option value="All">All Subjects</option>
+              <option value="Pathology">Pathology</option>
+              <option value="Pharmacology">Pharmacology</option>
+              <option value="Microbiology">Microbiology</option>
+              <option value="Forensic Medicine">Forensic Medicine</option>
+              <option value="Community Medicine">Community Medicine</option>
+            </select>
+            <button class="btn btn-secondary hide-mobile" onclick="app.expandAllSyllabus()">Expand All</button>
+          </div>
+        </div>
+        
+        <!-- Target container for dynamic DOM injection -->
+        <div id="syllabus-content">
+          <!-- Fallback text in case JS is slow -->
+          <div style="padding: 2rem; text-align: center; color: var(--text-muted);">Loading massive syllabus data...</div>
+        </div>
+      </div>
+
+      <div class="view-container" id="view-drugs">
+        <div class="flex-between" style="margin-bottom: 1.5rem; flex-wrap: wrap;">
+          <div>
+            <h2>Clinical Drug Vault</h2>
+            <p style="margin:0;">Database & Head-to-Head Comparison.</p>
+          </div>
+          <button class="btn btn-primary" onclick="app.toggleCompareMode()">Compare Selected</button>
+        </div>
+        
+        <div class="card" style="padding:0; overflow:hidden;">
+          <div class="table-responsive" style="border:none;">
+            <table id="drug-table">
+              <thead><tr><th style="width:50px; text-align:center;">Vs</th><th>Drug Name</th><th>Class</th><th>Mechanism</th><th>Key Adverse Effects</th></tr></thead>
+              <tbody id="drug-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+        
+        <div id="drug-compare-area" style="display: none; margin-top: 2rem;" class="card">
+          <div class="flex-between" style="margin-bottom:1rem;">
+            <h3 style="color:var(--primary);">Head-to-Head Comparison</h3>
+            <button class="btn btn-secondary btn-icon" onclick="app.toggleCompareMode()">✕</button>
+          </div>
+          <div class="table-responsive"><table id="compare-table"></table></div>
+        </div>
+      </div>
+
+      <div class="view-container" id="view-disease-map">
+        <h2>Integrated Disease Map</h2>
+        <p style="margin-bottom: 1.5rem;">Connect Pathology, Microbiology, and Pharmacology clinically.</p>
+        <select id="disease-map-select" onchange="app.renderDiseaseMap()" style="max-width: 350px; margin-bottom: 2rem; font-size:1.05rem;">
+          <option value="Tuberculosis">Tuberculosis</option>
+          <option value="Malaria">Malaria (Coming Soon)</option>
+        </select>
+        <div id="disease-map-content"></div>
+      </div>
+
+      <div class="view-container" id="view-pomodoro">
+        <h2>Smart Pomodoro Focus</h2>
+        <div class="card" style="max-width: 600px; margin: 2rem auto; padding: 3rem 2rem; display:flex; flex-direction:column; align-items:center;">
+          
+          <select id="pomo-objective" style="margin-bottom: 2rem; max-width: 400px; font-weight:500;">
+            <option value="">Select study objective to log...</option>
+          </select>
+
+          <div style="display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; background:var(--bg-surface-hover); padding:0.5rem; border-radius:12px; border: 1px solid var(--border-color);">
+            <button class="btn btn-secondary" style="border:none;" onclick="app.setTimerMode('focus')">Focus (25m)</button>
+            <button class="btn btn-secondary" style="border:none;" onclick="app.setTimerMode('short')">Short Break (5m)</button>
+            <button class="btn btn-secondary" style="border:none;" onclick="app.setTimerMode('long')">Long Break (15m)</button>
+          </div>
+          
+          <div class="timer-display" id="timer-display">25:00</div>
+          
+          <div style="margin: 2rem 0; display: flex; gap: 1rem;">
+            <button class="btn btn-primary" id="timer-start" onclick="app.toggleTimer()" style="width: 160px; font-size: 1.1rem; padding: 0.8rem;">Start Focus</button>
+            <button class="btn btn-secondary" onclick="app.resetTimer()" style="padding: 0.8rem;">Reset</button>
+          </div>
+          <p style="margin:0; font-size:1.1rem;">Total Focus Today: <span id="pomo-total" style="font-weight: bold; color: var(--primary);">0</span> minutes</p>
+        </div>
+      </div>
+
+      <div class="view-container" id="view-analytics">
+        <h2>Analytics & Performance</h2>
+        <div class="grid grid-2" style="margin-top: 1.5rem;">
+          <div class="card">
+            <h3 style="margin-bottom:2rem;">Focus History (Last 7 Days)</h3>
+            <div id="chart-hours" style="display: flex; align-items: flex-end; justify-content: space-around; gap: 8px; height: 200px; border-bottom: 2px solid var(--border-color); padding-bottom: 5px;"></div>
+          </div>
+          <div class="card">
+            <h3 style="margin-bottom:2rem;">Mastery by Subject</h3>
+            <div id="chart-subjects" style="display: flex; flex-direction: column; gap: 1.5rem;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="view-container" id="view-flashcards">
+        <div class="flex-between" style="margin-bottom: 2rem;">
+          <div>
+            <h2>S
